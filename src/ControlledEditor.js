@@ -3,6 +3,7 @@ import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import { stateToHTML } from "draft-js-export-html";
 import CustomColorPicker from "./CustomColorPicker";
+import FontSize from "./fontSize";
 
 class ControlledEditor extends Component {
   constructor(props) {
@@ -91,8 +92,34 @@ class ControlledEditor extends Component {
           editorClassName="controlledEditor-block"
           onEditorStateChange={this.onEditorStateChange}
           toolbar={{
-            colorPicker: { component: CustomColorPicker }
+            options: ["inline", "blockType", "colorPicker", "link"],
+            colorPicker: { component: CustomColorPicker, title: "Color Picker" }
           }}
+          localization={{
+            locale: "en",
+            translations: {
+              "components.controls.fontsize.fontsize": "Font Size",
+              fontSizeTitle: "Font Size",
+              options: [
+                8,
+                9,
+                10,
+                11,
+                12,
+                14,
+                16,
+                18,
+                24,
+                30,
+                36,
+                48,
+                60,
+                72,
+                96
+              ]
+            }
+          }}
+          toolbarCustomButtons={[<FontSize />]}
         />
         <div style={{ margin: "10px" }}>
           <button onClick={this.saveContent}>Save content</button>

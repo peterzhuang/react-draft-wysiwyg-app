@@ -109,13 +109,18 @@ class CustomColorPicker extends Component {
   };
 
   render() {
-    const { expanded, onExpandEvent } = this.props;
+    const {
+      expanded,
+      onExpandEvent,
+      config: { title }
+    } = this.props;
     return (
       <div
         className="rdw-image-wrapper"
         aria-haspopup="true"
         aria-expanded={expanded}
         aria-label="rdw-color-picker"
+        title={title}
       >
         <div className="rdw-option-wrapper" onClick={this.onButtonClick}>
           <img style={{ width: "20px" }} src={ColorPickerButton} alt="" />
