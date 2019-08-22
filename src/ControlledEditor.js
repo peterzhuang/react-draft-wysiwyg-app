@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
-import { stateToHTML } from "draft-js-export-html";
+// import { stateToHTML } from "draft-js-export-html";
+import draftToHtml from "./DraftToHtml";
 import CustomColorPicker from "./CustomColorPicker";
 import FontSize from "./fontSize";
+import LineHeight from "./lineHeight";
 
 class ControlledEditor extends Component {
   constructor(props) {
@@ -48,47 +50,89 @@ class ControlledEditor extends Component {
   };
 
   getContentAsRawHtml() {
-    let options = {
-      inlineStyleFn: styles => {
-        let textColorKey = "color-",
-          bgColorKey = "bgcolor-";
-        let textColor = styles
-            .filter(value => value.startsWith(textColorKey))
-            .first(),
-          bgColor = styles
-            .filter(value => value.startsWith(bgColorKey))
-            .first();
+    // let options = {
+    //   inlineStyleFn: styles => {
+    //     let textColorKey = "color-",
+    //       bgColorKey = "bgcolor-",
+    //       fontSizeKey = "fontsize-",
+    //       lineHeightKey = "lineheight-";
+    //     let textColor = styles
+    //         .filter(value => value.startsWith(textColorKey))
+    //         .first(),
+    //       bgColor = styles
+    //         .filter(value => value.startsWith(bgColorKey))
+    //         .first(),
+    //       fontSize = styles
+    //         .filter(value => value.startsWith(fontSizeKey))
+    //         .first(),
+    //       lineHeight = styles
+    //         .filter(value => value.startsWith(lineHeightKey))
+    //         .first();
 
-        if (textColor) {
-          return {
-            element: "span",
-            style: {
-              color: textColor.replace(textColorKey, "")
-            }
-          };
-        }
-
-        if (bgColor) {
-          return {
-            element: "span",
-            style: {
-              backgroundColor: bgColor.replace(bgColorKey, "")
-            }
-          };
-        }
-      }
-    };
-    const contentState = this.state.editorState.getCurrentContent();
-    const html = stateToHTML(contentState, options);
+    //     if (textColor) {
+    //       return {
+    //         element: "span",
+    //         style: {
+    //           color: textColor.replace(textColorKey, "")
+    //         }
+    //       };
+    //     }
+    //     if (bgColor) {
+    //       return {
+    //         element: "span",
+    //         style: {
+    //           backgroundColor: bgColor.replace(bgColorKey, "")
+    //         }
+    //       };
+    //     }
+    //     if (fontSize) {
+    //       return {
+    //         element: "span",
+    //         style: {
+    //           fontSize: fontSize.replace(fontSizeKey, "")
+    //         }
+    //       };
+    //     }
+    //     if (lineHeight) {
+    //       return {
+    //         element: "span",
+    //         style: {
+    //           lineHeight: lineHeight.replace(lineHeightKey, "")
+    //         }
+    //       };
+    //     }
+    //   }
+    // };
+    // const contentState = this.state.editorState.getCurrentContent();
+    // const html = stateToHTML(contentState, options);
+    const html = draftToHtml(
+      convertToRaw(this.state.editorState.getCurrentContent())
+    );
     return { __html: html };
   }
 
   render() {
     const { editorState } = this.state;
+    const customStyleMap = {
+      "lineheight-1": {
+        lineHeight: 1
+      },
+      "lineheight-2": {
+        lineHeight: 2
+      },
+      "lineheight-3": {
+        lineHeight: 3
+      },
+      "lineheight-4": {
+        lineHeight: 4
+      }
+    };
     return (
       <>
         <Editor
+          customStyleMap={customStyleMap}
           editorState={editorState}
+          wrapperStyle={{ width: "600px" }}
           editorClassName="controlledEditor-block"
           onEditorStateChange={this.onEditorStateChange}
           toolbar={{
@@ -116,10 +160,12 @@ class ControlledEditor extends Component {
                 60,
                 72,
                 96
-              ]
+              ],
+              lineHeightTitle: "Line Height",
+              lineHeightOptions: [1, 1.2, 1.5, 1.75, 2, 2.5, 3, 4]
             }
           }}
-          toolbarCustomButtons={[<FontSize />]}
+          toolbarCustomButtons={[<FontSize />, <LineHeight />]}
         />
         <div style={{ margin: "10px" }}>
           <button onClick={this.saveContent}>Save content</button>
